@@ -196,4 +196,24 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
     const fbHref = await page.locator('footer a[href*="facebook.com"]').first().getAttribute('href');
     expect(fbHref).toContain('BorobudurMarathon2024');
   });
+
+  test('TC-BM-015 (Verifikasi BUG-BM-005): Layout ikon bendera bahasa turun ke baris baru pada halaman Bahasa Indonesia (/id/)', async ({ page }) => {
+    // 1. Pada halaman Inggris (/), menu MERCHANDISE dan ikon bendera berada di satu baris horizontal yang sejajar
+    await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' });
+    const enMerchBox = await page.locator('nav a, header a', { hasText: /^MERCHANDISE$/i }).last().boundingBox();
+    const enFlagBox = await page.locator('nav a img, header a img').last().boundingBox();
+
+    if (enMerchBox && enFlagBox) {
+      expect(Math.abs(enFlagBox.y - enMerchBox.y)).toBeLessThan(30);
+    }
+
+    // 2. Pada halaman Indonesia (/id/), karena teks menu lebih panjang ("BERANDA", "APLIKASI", dll.), ikon bendera turun (wrap) ke baris di bawahnya
+    await page.goto(`${BASE_URL}/id/`, { waitUntil: 'domcontentloaded' });
+    const idMerchBox = await page.locator('nav a, header a', { hasText: /^MERCHANDISE$/i }).last().boundingBox();
+    const idFlagBox = await page.locator('nav a img, header a img').last().boundingBox();
+
+    if (idMerchBox && idFlagBox) {
+      expect(idFlagBox.y).toBeGreaterThan(idMerchBox.y + 20);
+    }
+  });
 });
