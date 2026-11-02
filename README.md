@@ -17,7 +17,6 @@ Repository ini berisi implementasi UI (**React + TypeScript + Tailwind CSS**) da
 │   │   └── profile.spec.ts        # Automation Test Soal Nomor 1 (15 Test Cases)
 │   ├── nomor-2-borobudur/         # Automation Test Soal Nomor 2 (Borobudur Marathon)
 │   └── nomor-3-flowchart/         # Automation Test Soal Nomor 3 (Flow Chart Kasir/POS)
-├── DOKUMEN_JAWABAN_NOMOR_1.md     # Dokumentasi Test Case & Hasil Eksekusi Nomor 1
 ├── playwright.config.ts           # Konfigurasi Playwright Test Runner
 └── package.json
 ```

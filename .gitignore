@@ -5,3 +5,7 @@ test-results/
 .playwright-cli/
 *.log
 .DS_Store
+QA Test-4.0.pdf
+DOKUMEN_JAWABAN_*.md
+tsconfig.tsbuildinfo
+
