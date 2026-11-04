@@ -26,7 +26,7 @@ export function RadioGroup<T extends string = string>({
 }: RadioGroupProps<T>): React.ReactElement {
   return (
     <fieldset>
-      {/* judul kategori radio */}
+      {/* label kategori radio */}
       <legend className="block text-xs font-medium text-zinc-800 mb-2">
         {label}
       </legend>

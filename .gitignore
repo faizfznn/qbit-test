@@ -9,3 +9,7 @@ QA Test-4.0.pdf
 DOKUMEN_JAWABAN_*.md
 tsconfig.tsbuildinfo
 
+
+scratch/
+gdoc-update.md
+*.pdf

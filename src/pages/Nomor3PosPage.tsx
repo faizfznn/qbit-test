@@ -27,17 +27,8 @@ import {
   formatRupiah,
 } from '../utils/posTransaction';
 
-/**
- * Halaman Nomor 3 — POS Flow Chart Simulation:
- * 1. Start -> Customer makes a purchase -> Sale Transaction
- * 2. Selects items to purchase -> Add Items to Cart
- * 3. Chooses to apply discount or promotion -> Apply Discount/Promotion
- *    - Decision: Discount Applied? (Syarat minimal belanja Rp100.000)
- *    - Yes: Calculate Discounted Total (potongan 10%)
- *    - No: Add Items to Cart
- * 4. Enters payment information (Split Payment 40% Tunai : 60% QRIS)
- * 5. Process Payment -> Payment approved -> Complete Sale
- * 6. Print Receipt / Send Digital Receipt (Email / WhatsApp)
+/*
+ Halaman Nomor 3 — POS Flow Chart Simulation:
  */
 export const Nomor3PosPage: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
@@ -214,7 +205,7 @@ export const Nomor3PosPage: React.FC = () => {
         </header>
 
         <main className="grid grid-cols-1 lg:grid-cols-12 gap-6">
-          {/* Left Column: Catalog & Discount Flow */}
+          {/* Kolom Kiri */}
           <div className="lg:col-span-7 space-y-6">
             {/* Step 1: Selects items to purchase -> Add Items to Cart */}
             <section
@@ -368,7 +359,7 @@ export const Nomor3PosPage: React.FC = () => {
             </section>
           </div>
 
-          {/* Right Column: Cart Summary & Split Payment 40:60 */}
+          {/* Kolom Kanan */}
           <div className="lg:col-span-5 space-y-6">
             {/* Cart & Calculation Summary */}
             <section

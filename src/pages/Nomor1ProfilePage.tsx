@@ -9,17 +9,11 @@ import {
   validateProfileForm,
 } from '../utils/profileValidation';
 
-/**
- * Halaman Nomor 1 — Form "Input your profile"
- * Mengimplementasikan tampilan mobile form profil pengguna sesuai screenshot soal:
- * - Status bar simulasi (08:34, 4G, baterai)
- * - Header dengan tombol navigasi Back (<-) dan judul "Input your profile"
- * - Field input: First Name (wajib), Middle Name (opsional), Last Name (opsional),
- *   Nickname (wajib), Gender (radio Male/Female), Birth Date (wajib dengan ikon kalender)
- * - Tombol Save dan kartu umpan balik jika profil berhasil disimpan
- */
+/*
+ Halaman Nomor 1 — Form "Input your profile"
+*/
 export const Nomor1ProfilePage: React.FC = () => {
-  // State data form profil pengguna
+  // state data form profil pengguna
   const [formData, setFormData] = useState<ProfileFormData>({
     firstName: '',
     middleName: '',
@@ -29,38 +23,36 @@ export const Nomor1ProfilePage: React.FC = () => {
     birthDate: '',
   });
 
-  // State pesan error per field hasil validasi
+  // state pesan error
   const [errors, setErrors] = useState<FormErrors>({});
 
-  // State data profil yang berhasil divalidasi dan disimpan
+  // state untuk meyimpan data profile
   const [savedData, setSavedData] = useState<ProfileFormData | null>(null);
 
-  // State pesan navigasi saat tombol Back diklik
+  // state pesan navigasi saat tombol Back diklik
   const [navMessage, setNavMessage] = useState<string | null>(null);
 
-  // Handler perubahan input nilai form
+  // handler perubahan input nilai form
   const handleChange = <K extends keyof ProfileFormData>(
     field: K,
     value: ProfileFormData[K]
   ) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
     setSavedData(null);
-    // Hapus error pada field yang sedang diedit jika sebelumnya ada error
     if (errors[field]) {
       setErrors((prev) => ({ ...prev, [field]: undefined }));
     }
   };
 
-  // Handler submit form saat tombol Save diklik
+  // handler submit form
   const handleSubmit = (e: React.FormEvent) => {
     e.preventDefault();
     setNavMessage(null);
 
-    // Jalankan validasi menyeluruh
     const validationErrors = validateProfileForm(formData);
     setErrors(validationErrors);
 
-    // Jika tidak ada error sama sekali, simpan data profil
+    // save data profil
     if (Object.keys(validationErrors).length === 0) {
       setSavedData({
         ...formData,
@@ -77,9 +69,7 @@ export const Nomor1ProfilePage: React.FC = () => {
 
   return (
     <div className="min-h-screen bg-zinc-50 flex flex-col items-center justify-start sm:justify-center py-0 sm:py-8 px-0 sm:px-4">
-      {/* Container bergaya frame mobile sesuai desain pada soal */}
       <div className="w-full max-w-[390px] bg-white min-h-screen sm:min-h-0 sm:rounded-2xl sm:border sm:border-zinc-200 sm:shadow-sm px-6 py-6 flex flex-col">
-        {/* Status bar mobile (simulasi 08:34 & 4G) */}
         <div className="flex items-center justify-between text-xs font-semibold text-zinc-900 mb-5 select-none">
           <span>08:34</span>
           <div className="flex items-center gap-1.5">
@@ -90,7 +80,7 @@ export const Nomor1ProfilePage: React.FC = () => {
           </div>
         </div>
 
-        {/* Header aplikasi */}
+        {/* header aplikasi */}
         <header className="flex items-center gap-3 mb-6">
           <Button
             type="button"
@@ -109,7 +99,7 @@ export const Nomor1ProfilePage: React.FC = () => {
           </h1>
         </header>
 
-        {/* Tampilan pesan umpan balik tombol Back */}
+        {/* tampilan pesan umpan balik tombol Back */}
         {navMessage && (
           <div
             role="status"
@@ -120,7 +110,7 @@ export const Nomor1ProfilePage: React.FC = () => {
           </div>
         )}
 
-        {/* Form isian data profil */}
+        {/* form isian data profil */}
         <main className="flex-1">
           <form
             onSubmit={handleSubmit}

@@ -2,13 +2,11 @@ import { test, expect } from '@playwright/test';
 
 test.describe('Nomor 3 - Flow Chart POS: Split Payment 40:60 & Diskon Minimal Rp100.000', () => {
   test.beforeEach(async ({ page }) => {
-    await page.goto('/pos');
+    await page.goto('/nomor3');
     await expect(page.getByTestId('pos-page-title')).toBeVisible();
   });
 
-  // =========================================================================
   // BAGIAN 3A: SKENARIO SPLIT PAYMENT 40:60 DENGAN TUNAI DAN QRIS (TC-SP-001 s/d TC-SP-008)
-  // =========================================================================
 
   test('TC-SP-001 (Positive): Split Payment 40:60 Tunai dan QRIS dengan uang tunai pas dan cetak struk fisik (Print Receipt)', async ({ page }) => {
     // Pilih 2x Paket Drip Bag Coffee (2 x Rp50.000 = Rp100.000)
@@ -169,9 +167,7 @@ test.describe('Nomor 3 - Flow Chart POS: Split Payment 40:60 & Diskon Minimal Rp
     await expect(page.getByTestId('sale-complete-banner')).toBeVisible();
   });
 
-  // =========================================================================
   // BAGIAN 3B: SKENARIO PEMBELIAN BEBERAPA BARANG DENGAN DISKON MINIMAL Rp100.000 (TC-DSC-001 s/d TC-DSC-008)
-  // =========================================================================
 
   test('TC-DSC-001 (Boundary - Positive): Pembelian beberapa barang dengan total belanja tepat Rp100.000 berhasil mendapat diskon 10%', async ({ page }) => {
     // Pilih Kopi Arabika (Rp45.000) + Matcha (Rp35.000) -> Rp80.000, ganti dengan 2x Croissant (2 x Rp25.000 = Rp50.000) + 1x Drip Coffee (Rp50.000) = Rp100.000

@@ -1,11 +1,7 @@
 import React from 'react';
 
-/**
- * Komponen Button reusable untuk aksi form dan navigasi.
- * Mendukung beberapa varian gaya:
- * - primary: tombol utama warna merah/magenta (#C81E56)
- * - icon: tombol transparan dengan border halus untuk tombol navigasi seperti icon Back
- * - secondary: tombol netral dengan background abu-abu
+/*
+ Komponen Button reusable untuk action
  */
 export interface ButtonProps extends React.ButtonHTMLAttributes<HTMLButtonElement> {
   variant?: 'primary' | 'icon' | 'secondary';
@@ -21,7 +17,7 @@ export const Button: React.FC<ButtonProps> = ({
   children,
   ...props
 }) => {
-  // Penentuan style berdasarkan varian
+  // case variant style use if else
   let variantStyles = '';
   if (variant === 'primary') {
     variantStyles =

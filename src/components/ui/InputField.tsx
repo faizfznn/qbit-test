@@ -1,10 +1,8 @@
 import React from 'react';
 import { AlertCircle } from 'lucide-react';
 
-/**
- * Komponen InputField reusable untuk form profil dan form lainnya.
- * Mendukung label, teks penanda Opsional, icon di sisi kiri, pesan validasi error,
- * serta atribut data-testid untuk mempermudah E2E automation testing.
+/*
+ * Komponen InputField reusable untuk all form
  */
 export interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   id: string;
@@ -31,7 +29,7 @@ export const InputField: React.FC<InputFieldProps> = ({
 
   return (
     <div>
-      {/* Label input field */}
+      {/* label input field */}
       <label
         htmlFor={id}
         className="block text-xs font-medium text-zinc-800 mb-1.5"
@@ -42,7 +40,7 @@ export const InputField: React.FC<InputFieldProps> = ({
         )}
       </label>
 
-      {/* Wrapper input dengan ikon opsional di sisi kiri */}
+      {/* wrapper input dengan ikon*/}
       <div className="relative">
         {leftIcon && (
           <span
@@ -58,18 +56,16 @@ export const InputField: React.FC<InputFieldProps> = ({
           data-testid={testId}
           aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
-          className={`w-full rounded-xl border bg-white px-3.5 py-2.5 text-xs text-zinc-900 placeholder-zinc-400 transition-colors focus:outline-none focus:ring-1 ${
-            leftIcon ? 'pl-10' : ''
-          } ${
-            error
+          className={`w-full rounded-xl border bg-white px-3.5 py-2.5 text-xs text-zinc-900 placeholder-zinc-400 transition-colors focus:outline-none focus:ring-1 ${leftIcon ? 'pl-10' : ''
+            } ${error
               ? 'border-red-400 focus:border-red-500 focus:ring-red-400'
               : 'border-zinc-200 focus:border-zinc-400 focus:ring-zinc-300'
-          } ${className}`}
+            } ${className}`}
           {...props}
         />
       </div>
 
-      {/* Tampilan pesan error jika validasi gagal */}
+      {/* error message */}
       {error && (
         <div
           id={errorId}

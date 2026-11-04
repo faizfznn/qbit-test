@@ -1,18 +1,16 @@
 import { test, expect } from '@playwright/test';
 
 /**
- * Suite Pengujian Nomor 2 — Live Testing: Website Borobudur Marathon
+ * Pengujian Nomor 2 — Live Testing: Website Borobudur Marathon
  * Target: https://borobudurmarathon.com/
- * Menguji fungsionalitas live website, pemetaan slug/slash utama (EN & ID),
- * integrasi portal registrasi eksternal, serta verifikasi temuan bug secara terotomatisasi.
+ * Menyelaraskan seluruh 16 Test Case (TC-BM-001 s/d TC-BM-016)
+ * mencakup 10 pengujian fungsional dan 6 verifikasi temuan bug nyata (BUG-BM-001 s/d BUG-BM-006).
  */
 
 const BASE_URL = 'https://borobudurmarathon.com';
 
 test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borobudurmarathon.com/)', () => {
-  // Gunakan viewport desktop standar untuk menguji layout navbar & konten web
   test.use({ viewport: { width: 1366, height: 768 } });
-  // Timeout 60 detik karena mengakses website publik melalui jaringan internet
   test.setTimeout(60000);
 
   test('TC-BM-001: Verifikasi akses halaman utama (Homepage /) dan elemen navigasi utama', async ({ page }) => {
@@ -168,23 +166,14 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
     }
   });
 
-  test('TC-BM-011: Verifikasi akses Portal Akun Peserta (https://my.borobudurmarathon.com/)', async ({ page }) => {
-    const res = await page.goto('https://my.borobudurmarathon.com/', {
-      waitUntil: 'domcontentloaded',
-    });
-    expect(res?.status()).toBe(200);
-    await expect(page).toHaveURL(/my\.borobudurmarathon\.com\/signin/i);
-    await expect(page).toHaveTitle(/Borobudur Marathon \| Registrant Portal/i);
-  });
-
   // =========================================================================
-  // AUTOMATION VERIFIKASI TEMUAN BUG (BUG-BM-001 s/d BUG-BM-005)
+  // AUTOMATION VERIFIKASI TEMUAN BUG (BUG-BM-001 s/d BUG-BM-006)
   // =========================================================================
 
-  test('TC-BM-012 (Verifikasi BUG-BM-001): Menu navbar Bank Jateng Young Talent pada EN mengarah ke slug ID', async ({ page }) => {
+  test('TC-BM-011 (Verifikasi BUG-BM-001): Menu navbar Bank Jateng Young Talent pada EN mengarah ke slug ID', async ({ page }) => {
     await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' });
 
-    // Temuan bug: Pada mode bahasa EN, tautan Young Talent keliru mengarah ke /id/young-talent-2026/
+    // Temuan bug 1: Pada mode bahasa EN, tautan Young Talent keliru mengarah ke /id/young-talent-2026/
     const youngTalentNavHref = await page
       .locator('a', { hasText: 'Bank Jateng Young Talent' })
       .first()
@@ -192,10 +181,10 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
     expect(youngTalentNavHref).toBe('/id/young-talent-2026/');
   });
 
-  test('TC-BM-013 (Verifikasi BUG-BM-002): Tautan email info@borobudurmarathon.com di Footer menggunakan href="/contact"', async ({ page }) => {
+  test('TC-BM-012 (Verifikasi BUG-BM-002): Tautan email info@borobudurmarathon.com di Footer menggunakan href="/contact"', async ({ page }) => {
     await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' });
 
-    // Temuan bug: Teks email pada footer tidak menggunakan protokol mailto:
+    // Temuan bug 2: Teks email pada footer tidak menggunakan protokol mailto:
     const footerEmailHref = await page
       .locator('footer a', { hasText: 'info@borobudurmarathon.com' })
       .first()
@@ -203,26 +192,7 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
     expect(footerEmailHref).toBe('/contact');
   });
 
-  test('TC-BM-014 (Verifikasi BUG-BM-003 & BUG-BM-004): Deteksi 404 wp-emoji-release.min.js dan tautan Facebook lama', async ({ page }) => {
-    const failedEmojiRequests: number[] = [];
-    page.on('response', (res) => {
-      if (res.url().includes('wp-emoji-release.min.js')) {
-        failedEmojiRequests.push(res.status());
-      }
-    });
-
-    await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' });
-    await page.waitForTimeout(1000);
-
-    // Temuan bug 3: Resource internal WP emoji 404 Not Found
-    expect(failedEmojiRequests).toContain(404);
-
-    // Temuan bug 4: Tautan Facebook footer mengarah ke event lama tahun 2024
-    const fbHref = await page.locator('footer a[href*="facebook.com"]').first().getAttribute('href');
-    expect(fbHref).toContain('BorobudurMarathon2024');
-  });
-
-  test('TC-BM-015 (Verifikasi BUG-BM-005): Layout ikon bendera bahasa turun ke baris baru pada halaman Bahasa Indonesia (/id/)', async ({ page }) => {
+  test('TC-BM-013 (Verifikasi BUG-BM-003): Layout ikon bendera bahasa turun ke baris baru pada halaman Bahasa Indonesia (/id/)', async ({ page }) => {
     // 1. Pada halaman Inggris (/), menu MERCHANDISE dan ikon bendera berada di satu baris horizontal yang sejajar
     await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' });
     const enMerchBox = await page.locator('nav a, header a', { hasText: /^MERCHANDISE$/i }).last().boundingBox();
@@ -232,7 +202,7 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
       expect(Math.abs(enFlagBox.y - enMerchBox.y)).toBeLessThan(30);
     }
 
-    // 2. Pada halaman Indonesia (/id/), karena teks menu lebih panjang ("BERANDA", "APLIKASI", dll.), ikon bendera turun (wrap) ke baris di bawahnya
+    // 2. Pada halaman Indonesia (/id/), karena teks menu lebih panjang, ikon bendera turun (wrap) ke baris di bawahnya
     await page.goto(`${BASE_URL}/id/`, { waitUntil: 'domcontentloaded' });
     const idMerchBox = await page.locator('nav a, header a', { hasText: /^MERCHANDISE$/i }).last().boundingBox();
     const idFlagBox = await page.locator('nav a img, header a img').last().boundingBox();
@@ -240,5 +210,39 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
     if (idMerchBox && idFlagBox) {
       expect(idFlagBox.y).toBeGreaterThan(idMerchBox.y + 20);
     }
+  });
+
+  test('TC-BM-014 (Verifikasi BUG-BM-004): Tombol "Gallery Borobudur Marathon 2025" pada /gallery/ salah mengarah ke /gallery-2026/', async ({ page }) => {
+    await page.goto(`${BASE_URL}/gallery/`, { waitUntil: 'domcontentloaded' });
+
+    // Temuan bug 4: Tombol arsip tahun 2025 memiliki tautan keliru ke /gallery-2026/
+    const btn2025 = page.locator('a', { hasText: /Gallery Borobudur Marathon 2025/i }).first();
+    await expect(btn2025).toBeAttached();
+    const href = await btn2025.getAttribute('href');
+    expect(href).toContain('/gallery-2026/');
+  });
+
+  test('TC-BM-015 (Verifikasi BUG-BM-005): Deteksi response API 404 pada galeri foto Boyolali untuk filter Start - Finish dan Jl. Raya Boyolali – Semarang', async ({ page }) => {
+    // Temuan bug 5: API SteelyToe resources master_file_tagging merespon 404 pada tag Start - Finish
+    const apiRes = await page.request.get(
+      'https://api.steelytoe.com/api/v1/resources/master_file_tagging?pageSize=9&page=1&event_id=1&tag_id=Start+-+Finish'
+    );
+    expect(apiRes.status()).toBe(404);
+
+    const pageRes = await page.goto(`${BASE_URL}/bank-jateng-friendship-run-boyolali-2026-gallery/`, {
+      waitUntil: 'domcontentloaded',
+    });
+    expect(pageRes?.status()).toBe(200);
+  });
+
+  test('TC-BM-016 (Verifikasi BUG-BM-006): Halaman galeri Semarang menampilkan error direktori tidak ditemukan', async ({ page }) => {
+    // Temuan bug 6: Galeri foto Semarang gagal memuat folder aset gambar
+    const response = await page.goto(`${BASE_URL}/friendship-run-gallery/`, {
+      waitUntil: 'domcontentloaded',
+    });
+    expect(response?.status()).toBe(200);
+
+    const errorText = page.locator('text=The root directory of the gallery couldn\'t be found');
+    await expect(errorText.first()).toBeVisible();
   });
 });
