@@ -27,6 +27,18 @@ import {
   formatRupiah,
 } from '../utils/posTransaction';
 
+/**
+ * Halaman Nomor 3 — POS Flow Chart Simulation:
+ * 1. Start -> Customer makes a purchase -> Sale Transaction
+ * 2. Selects items to purchase -> Add Items to Cart
+ * 3. Chooses to apply discount or promotion -> Apply Discount/Promotion
+ *    - Decision: Discount Applied? (Syarat minimal belanja Rp100.000)
+ *    - Yes: Calculate Discounted Total (potongan 10%)
+ *    - No: Add Items to Cart
+ * 4. Enters payment information (Split Payment 40% Tunai : 60% QRIS)
+ * 5. Process Payment -> Payment approved -> Complete Sale
+ * 6. Print Receipt / Send Digital Receipt (Email / WhatsApp)
+ */
 export const Nomor3PosPage: React.FC = () => {
   const [cart, setCart] = useState<CartItem[]>([]);
   const [wantsDiscount, setWantsDiscount] = useState<boolean>(false);
@@ -91,10 +103,10 @@ export const Nomor3PosPage: React.FC = () => {
       const existing = prev.find((item) => item.product.id === product.id);
       const nextCart = existing
         ? prev.map((item) =>
-            item.product.id === product.id
-              ? { ...item, quantity: item.quantity + 1 }
-              : item
-          )
+          item.product.id === product.id
+            ? { ...item, quantity: item.quantity + 1 }
+            : item
+        )
         : [...prev, { product, quantity: 1 }];
 
       syncDiscountNotice(nextCart, wantsDiscount);
@@ -191,11 +203,10 @@ export const Nomor3PosPage: React.FC = () => {
           </div>
           <Button
             type="button"
-            variant="icon"
             testId="btn-reset-pos"
             aria-label="Reset Transaksi"
             onClick={handleResetTransaction}
-            className="self-start sm:self-auto px-3 py-2 border border-zinc-200 text-xs font-medium text-zinc-700 gap-1.5"
+            className="self-start sm:self-auto px-3 py-2 border border-zinc-200 text-xs font-medium text-white gap-1.5"
           >
             <RotateCcw className="w-3.5 h-3.5 mr-1.5 inline" />
             Transaksi Baru
@@ -307,11 +318,10 @@ export const Nomor3PosPage: React.FC = () => {
                 </h2>
                 <span
                   data-testid="badge-discount-status"
-                  className={`text-xs font-semibold px-2.5 py-0.5 rounded-md border tabular-nums ${
-                    summary.discountApplied
-                      ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
-                      : 'bg-zinc-100 text-zinc-700 border-zinc-200'
-                  }`}
+                  className={`text-xs font-semibold px-2.5 py-0.5 rounded-md border tabular-nums ${summary.discountApplied
+                    ? 'bg-emerald-50 text-emerald-800 border-emerald-200'
+                    : 'bg-zinc-100 text-zinc-700 border-zinc-200'
+                    }`}
                 >
                   {summary.discountApplied ? 'Discount Applied: YES' : 'Discount Applied: NO'}
                 </span>
@@ -342,11 +352,10 @@ export const Nomor3PosPage: React.FC = () => {
                 <div
                   role="alert"
                   data-testid="discount-feedback"
-                  className={`rounded-lg border p-3 text-xs font-medium flex items-start gap-2 ${
-                    discountNotice.type === 'success'
-                      ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
-                      : 'border-amber-200 bg-amber-50 text-amber-900'
-                  }`}
+                  className={`rounded-lg border p-3 text-xs font-medium flex items-start gap-2 ${discountNotice.type === 'success'
+                    ? 'border-emerald-200 bg-emerald-50 text-emerald-900'
+                    : 'border-amber-200 bg-amber-50 text-amber-900'
+                    }`}
                 >
                   {discountNotice.type === 'success' ? (
                     <CheckCircle2 className="w-4 h-4 text-emerald-600 shrink-0 mt-0.5" />
@@ -462,11 +471,10 @@ export const Nomor3PosPage: React.FC = () => {
                     setPaymentMode('SPLIT_40_60');
                     setPaymentError(null);
                   }}
-                  className={`px-2.5 py-2 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${
-                    paymentMode === 'SPLIT_40_60'
-                      ? 'border-[#D11F66] bg-[#D11F66]/5 text-[#D11F66]'
-                      : 'border-zinc-200 text-zinc-700 hover:bg-zinc-50'
-                  }`}
+                  className={`px-2.5 py-2 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${paymentMode === 'SPLIT_40_60'
+                    ? 'border-[#D11F66] bg-[#D11F66]/5 text-[#D11F66]'
+                    : 'border-zinc-200 text-zinc-700 hover:bg-zinc-50'
+                    }`}
                 >
                   Split 40:60
                 </button>
@@ -477,11 +485,10 @@ export const Nomor3PosPage: React.FC = () => {
                     setPaymentMode('FULL_CASH');
                     setPaymentError(null);
                   }}
-                  className={`px-2.5 py-2 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${
-                    paymentMode === 'FULL_CASH'
-                      ? 'border-[#D11F66] bg-[#D11F66]/5 text-[#D11F66]'
-                      : 'border-zinc-200 text-zinc-700 hover:bg-zinc-50'
-                  }`}
+                  className={`px-2.5 py-2 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${paymentMode === 'FULL_CASH'
+                    ? 'border-[#D11F66] bg-[#D11F66]/5 text-[#D11F66]'
+                    : 'border-zinc-200 text-zinc-700 hover:bg-zinc-50'
+                    }`}
                 >
                   Tunai 100%
                 </button>
@@ -492,11 +499,10 @@ export const Nomor3PosPage: React.FC = () => {
                     setPaymentMode('FULL_QRIS');
                     setPaymentError(null);
                   }}
-                  className={`px-2.5 py-2 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${
-                    paymentMode === 'FULL_QRIS'
-                      ? 'border-[#D11F66] bg-[#D11F66]/5 text-[#D11F66]'
-                      : 'border-zinc-200 text-zinc-700 hover:bg-zinc-50'
-                  }`}
+                  className={`px-2.5 py-2 rounded-lg border text-xs font-semibold transition-colors cursor-pointer ${paymentMode === 'FULL_QRIS'
+                    ? 'border-[#D11F66] bg-[#D11F66]/5 text-[#D11F66]'
+                    : 'border-zinc-200 text-zinc-700 hover:bg-zinc-50'
+                    }`}
                 >
                   QRIS 100%
                 </button>
@@ -617,13 +623,12 @@ export const Nomor3PosPage: React.FC = () => {
                     </span>
                     <span
                       data-testid="qris-status-badge"
-                      className={`font-bold px-2 py-0.5 rounded text-[11px] ${
-                        qrisStatus === 'PAID'
-                          ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
-                          : qrisStatus === 'FAILED'
-                            ? 'bg-red-50 text-red-700 border border-red-200'
-                            : 'bg-amber-50 text-amber-700 border border-amber-200'
-                      }`}
+                      className={`font-bold px-2 py-0.5 rounded text-[11px] ${qrisStatus === 'PAID'
+                        ? 'bg-emerald-50 text-emerald-700 border border-emerald-200'
+                        : qrisStatus === 'FAILED'
+                          ? 'bg-red-50 text-red-700 border border-red-200'
+                          : 'bg-amber-50 text-amber-700 border border-amber-200'
+                        }`}
                     >
                       {qrisStatus}
                     </span>
@@ -671,7 +676,6 @@ export const Nomor3PosPage: React.FC = () => {
               {/* Process Payment Button */}
               <Button
                 type="button"
-                variant="primary"
                 fullWidth
                 testId="btn-process-payment"
                 onClick={handleProcessPayment}

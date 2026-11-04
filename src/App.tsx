@@ -2,7 +2,15 @@ import { useState, useEffect } from 'react';
 import { Nomor1ProfilePage } from './pages/Nomor1ProfilePage';
 import { Nomor3PosPage } from './pages/Nomor3PosPage';
 
+/**
+ * Komponen Utama App
+ * Menyediakan navigasi tab di bagian atas untuk memudahkan penguji/evaluator
+ * berpindah secara langsung antara:
+ * - Nomor 1: Implementasi Form Profil Mobile ("Input your profile")
+ * - Nomor 3: Simulasi Transaksi POS (Split Payment 40:60 & Diskon Minimal Rp100.000)
+ */
 export default function App() {
+  // Inisialisasi tab aktif berdasarkan path URL browser (/ atau /pos)
   const [activeTab, setActiveTab] = useState<'nomor1' | 'nomor3'>(() => {
     const path = window.location.pathname;
     const params = new URLSearchParams(window.location.search);
@@ -12,6 +20,7 @@ export default function App() {
     return 'nomor1';
   });
 
+  // Sinkronisasi navigasi browser (tombol back/forward)
   useEffect(() => {
     const handlePopState = () => {
       const path = window.location.pathname;
@@ -26,6 +35,7 @@ export default function App() {
     return () => window.removeEventListener('popstate', handlePopState);
   }, []);
 
+  // Fungsi ganti tab dan sinkronisasi URL tanpa reload halaman
   const switchTab = (tab: 'nomor1' | 'nomor3') => {
     const nextUrl = tab === 'nomor3' ? '/pos' : '/';
     window.history.pushState({}, '', nextUrl);
@@ -34,6 +44,7 @@ export default function App() {
 
   return (
     <div className="min-h-screen bg-zinc-50">
+      {/* Bar navigasi modul QA Test */}
       <nav
         aria-label="Navigasi Modul QA Test"
         className="bg-white border-b border-zinc-200 px-4 py-2.5 flex items-center justify-center gap-2 text-xs"
@@ -64,6 +75,7 @@ export default function App() {
         </button>
       </nav>
 
+      {/* Render tampilan halaman sesuai tab aktif */}
       {activeTab === 'nomor1' ? <Nomor1ProfilePage /> : <Nomor3PosPage />}
     </div>
   );

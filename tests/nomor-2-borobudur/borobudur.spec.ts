@@ -1,9 +1,18 @@
 import { test, expect } from '@playwright/test';
 
+/**
+ * Suite Pengujian Nomor 2 — Live Testing: Website Borobudur Marathon
+ * Target: https://borobudurmarathon.com/
+ * Menguji fungsionalitas live website, pemetaan slug/slash utama (EN & ID),
+ * integrasi portal registrasi eksternal, serta verifikasi temuan bug secara terotomatisasi.
+ */
+
 const BASE_URL = 'https://borobudurmarathon.com';
 
 test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borobudurmarathon.com/)', () => {
+  // Gunakan viewport desktop standar untuk menguji layout navbar & konten web
   test.use({ viewport: { width: 1366, height: 768 } });
+  // Timeout 60 detik karena mengakses website publik melalui jaringan internet
   test.setTimeout(60000);
 
   test('TC-BM-001: Verifikasi akses halaman utama (Homepage /) dan elemen navigasi utama', async ({ page }) => {
@@ -23,6 +32,7 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
   test('TC-BM-002: Verifikasi fitur pergantian bahasa (Language Switcher EN <-> ID)', async ({ page }) => {
     await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' });
 
+    // Cek keberadaan link switch ke versi Bahasa Indonesia (/id/)
     const idSwitch = page.locator('a[href*="/id/"]').first();
     await expect(idSwitch).toBeAttached();
 
@@ -30,6 +40,7 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
     expect(resId?.status()).toBe(200);
     await expect(page).toHaveURL(`${BASE_URL}/id/`);
 
+    // Pastikan navigasi versi Bahasa Indonesia memuat menu yang relevan
     await expect(page.locator('a[href*="/id/peraturan-ketentuan/"]').first()).toBeAttached();
     await expect(page.locator('a[href*="/id/hadiah-2026/"]').first()).toBeAttached();
     await expect(page.locator('a[href*="/id/tanya-jawab/"]').first()).toBeAttached();
@@ -49,6 +60,7 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
     expect(response?.status()).toBe(200);
     await expect(page.locator('h1, h2').first()).toContainText(/Rules & Regulations/i);
 
+    // Cek ketersediaan sub-slug syarat & ketentuan
     const expectedSubSlugs = [
       '/rules-regulations-borobudur-marathon/',
       '/terms-and-conditions-bank-jateng-friendship-run-2026/',
@@ -69,10 +81,12 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
   });
 
   test('TC-BM-005: Verifikasi halaman Prizes (/prizes-2026/ dan /id/hadiah-2026/)', async ({ page }) => {
+    // Versi bahasa Inggris
     const resEn = await page.goto(`${BASE_URL}/prizes-2026/`, { waitUntil: 'domcontentloaded' });
     expect(resEn?.status()).toBe(200);
     await expect(page.locator('h1, h2').first()).toContainText(/Prizes/i);
 
+    // Versi bahasa Indonesia
     const resId = await page.goto(`${BASE_URL}/id/hadiah-2026/`, { waitUntil: 'domcontentloaded' });
     expect(resId?.status()).toBe(200);
     await expect(page).toHaveTitle(/Hadiah 2026/i);
@@ -86,6 +100,7 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
     await expect(page.locator('a[href*="faq-borobudur-marathon"]').first()).toBeAttached();
     await expect(page.locator('a[href*="faq-shuttle-bus"]').first()).toBeAttached();
 
+    // Buka sub-slug FAQ detail dan interaksi accordion
     const detailRes = await page.goto(`${BASE_URL}/faq-borobudur-marathon/`, {
       waitUntil: 'domcontentloaded',
     });
@@ -102,6 +117,7 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
     expect(response?.status()).toBe(200);
     await expect(page.locator('h1, h2').first()).toContainText(/Race Results/i);
 
+    // Verifikasi integrasi tautan pihak ketiga ScoreNow
     await expect(page.locator('a', { hasText: '2025' }).first()).toHaveAttribute(
       'href',
       /results\.scorenow\.co\.id/i
@@ -145,6 +161,7 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
   });
 
   test('TC-BM-010: Verifikasi halaman Contact (/contact/), Sponsors (/sponsors/), Apps (/apps/), dan Merchandise (/official-merchandise/)', async ({ page }) => {
+    // Memastikan seluruh slug menu pendukung dapat dibuka dengan status HTTP 200 OK
     for (const slug of ['/sponsors/', '/contact/', '/apps/', '/official-merchandise/']) {
       const res = await page.goto(`${BASE_URL}${slug}`, { waitUntil: 'domcontentloaded' });
       expect(res?.status()).toBe(200);
@@ -160,9 +177,14 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
     await expect(page).toHaveTitle(/Borobudur Marathon \| Registrant Portal/i);
   });
 
+  // =========================================================================
+  // AUTOMATION VERIFIKASI TEMUAN BUG (BUG-BM-001 s/d BUG-BM-005)
+  // =========================================================================
+
   test('TC-BM-012 (Verifikasi BUG-BM-001): Menu navbar Bank Jateng Young Talent pada EN mengarah ke slug ID', async ({ page }) => {
     await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' });
 
+    // Temuan bug: Pada mode bahasa EN, tautan Young Talent keliru mengarah ke /id/young-talent-2026/
     const youngTalentNavHref = await page
       .locator('a', { hasText: 'Bank Jateng Young Talent' })
       .first()
@@ -173,6 +195,7 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
   test('TC-BM-013 (Verifikasi BUG-BM-002): Tautan email info@borobudurmarathon.com di Footer menggunakan href="/contact"', async ({ page }) => {
     await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' });
 
+    // Temuan bug: Teks email pada footer tidak menggunakan protokol mailto:
     const footerEmailHref = await page
       .locator('footer a', { hasText: 'info@borobudurmarathon.com' })
       .first()
@@ -191,8 +214,10 @@ test.describe('Nomor 2 - Live Testing: Website Borobudur Marathon (https://borob
     await page.goto(`${BASE_URL}/`, { waitUntil: 'domcontentloaded' });
     await page.waitForTimeout(1000);
 
+    // Temuan bug 3: Resource internal WP emoji 404 Not Found
     expect(failedEmojiRequests).toContain(404);
 
+    // Temuan bug 4: Tautan Facebook footer mengarah ke event lama tahun 2024
     const fbHref = await page.locator('footer a[href*="facebook.com"]').first().getAttribute('href');
     expect(fbHref).toContain('BorobudurMarathon2024');
   });

@@ -1,7 +1,11 @@
 import React from 'react';
 import { AlertCircle } from 'lucide-react';
 
-// interface input field
+/**
+ * Komponen InputField reusable untuk form profil dan form lainnya.
+ * Mendukung label, teks penanda Opsional, icon di sisi kiri, pesan validasi error,
+ * serta atribut data-testid untuk mempermudah E2E automation testing.
+ */
 export interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElement> {
   id: string;
   label: string;
@@ -12,7 +16,6 @@ export interface InputFieldProps extends React.InputHTMLAttributes<HTMLInputElem
   errorTestId?: string;
 }
 
-// input field custom
 export const InputField: React.FC<InputFieldProps> = ({
   id,
   label,
@@ -24,12 +27,11 @@ export const InputField: React.FC<InputFieldProps> = ({
   className = '',
   ...props
 }) => {
-  // id untuk pesan error
   const errorId = `error-${id}`;
 
   return (
     <div>
-      {/* label input */}
+      {/* Label input field */}
       <label
         htmlFor={id}
         className="block text-xs font-medium text-zinc-800 mb-1.5"
@@ -40,7 +42,7 @@ export const InputField: React.FC<InputFieldProps> = ({
         )}
       </label>
 
-      {/* wrapper input dan icon */}
+      {/* Wrapper input dengan ikon opsional di sisi kiri */}
       <div className="relative">
         {leftIcon && (
           <span
@@ -53,31 +55,31 @@ export const InputField: React.FC<InputFieldProps> = ({
 
         <input
           id={id}
-          name={id}
           data-testid={testId}
-          aria-invalid={!!error}
+          aria-invalid={Boolean(error)}
           aria-describedby={error ? errorId : undefined}
-          className={`w-full h-11 ${
-            leftIcon ? 'pl-10 pr-3.5' : 'px-3.5'
-          } rounded-lg border text-sm text-zinc-900 placeholder:text-zinc-400 transition-colors focus:outline-none ${
+          className={`w-full rounded-xl border bg-white px-3.5 py-2.5 text-xs text-zinc-900 placeholder-zinc-400 transition-colors focus:outline-none focus:ring-1 ${
+            leftIcon ? 'pl-10' : ''
+          } ${
             error
-              ? 'border-red-500 focus:border-red-600'
-              : 'border-zinc-200 focus:border-[#C81E56]'
+              ? 'border-red-400 focus:border-red-500 focus:ring-red-400'
+              : 'border-zinc-200 focus:border-zinc-400 focus:ring-zinc-300'
           } ${className}`}
           {...props}
         />
       </div>
 
-      {/* pesan error kalau validasi gagal */}
+      {/* Tampilan pesan error jika validasi gagal */}
       {error && (
-        <p
+        <div
           id={errorId}
           data-testid={errorTestId}
-          className="mt-1 text-xs text-red-600 flex items-center gap-1"
+          role="alert"
+          className="flex items-center gap-1.5 mt-1 text-[11px] text-red-600 font-medium"
         >
           <AlertCircle className="w-3.5 h-3.5 shrink-0" />
           <span>{error}</span>
-        </p>
+        </div>
       )}
     </div>
   );

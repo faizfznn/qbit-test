@@ -1,3 +1,15 @@
+/**
+ * Modul Kalkulasi & Validasi Transaksi POS (Nomor 3)
+ * Mengimplementasikan diagram alir (Flow Chart):
+ * - Start -> Customer makes a purchase -> Sale Transaction
+ * - Chooses to apply discount -> Apply Discount -> Discount Applied? (Min. Rp100.000)
+ *   -> Yes: Calculate Discounted Total (Diskon 10%)
+ *   -> No: Add Items to Cart
+ * - Enters payment information (Split Payment 40% Tunai : 60% QRIS)
+ * - Process Payment -> Payment approved -> Complete Sale
+ * - Print Receipt / Send Digital Receipt
+ */
+
 export interface ProductItem {
   id: string;
   name: string;
@@ -29,9 +41,12 @@ export interface SplitPaymentSummary {
   isQrisPaid: boolean;
 }
 
+// Batas minimal belanja untuk berhak mendapatkan diskon promo
 export const MIN_DISCOUNT_SUBTOTAL = 100_000;
-export const DEFAULT_DISCOUNT_RATE = 0.1; // 10% diskon untuk belanja minimal Rp100.000
+// Besaran diskon default (10%)
+export const DEFAULT_DISCOUNT_RATE = 0.1;
 
+// Daftar katalog produk contoh untuk pengujian transaksi POS
 export const CATALOG_PRODUCTS: ProductItem[] = [
   {
     id: 'prod-arabica',
@@ -71,14 +86,24 @@ export const CATALOG_PRODUCTS: ProductItem[] = [
   },
 ];
 
+/**
+ * Format angka ke mata uang Rupiah (contoh: 100000 -> "Rp100.000")
+ */
 export function formatRupiah(amount: number): string {
   return `Rp${Math.round(amount).toLocaleString('id-ID')}`;
 }
 
+/**
+ * Menghitung subtotal dari seluruh barang yang ada di keranjang
+ */
 export function calculateSubtotal(cart: CartItem[]): number {
   return cart.reduce((sum, item) => sum + item.product.price * item.quantity, 0);
 }
 
+/**
+ * Menghitung rincian transaksi: Subtotal, diskon promo, grand total,
+ * serta proporsi pembagian split payment (40% Tunai : 60% QRIS).
+ */
 export function calculateTransactionSummary(
   cart: CartItem[],
   wantsDiscount: boolean,
@@ -89,12 +114,15 @@ export function calculateTransactionSummary(
   customSplitQrisRatio = 60
 ): SplitPaymentSummary {
   const subtotal = calculateSubtotal(cart);
+
+  // Cek syarat batas minimal belanja diskon (>= Rp100.000)
   const discountEligible = subtotal >= MIN_DISCOUNT_SUBTOTAL;
   const discountApplied = wantsDiscount && discountEligible;
   const discountRate = discountApplied ? DEFAULT_DISCOUNT_RATE : 0;
   const discountAmount = discountApplied ? Math.round(subtotal * discountRate) : 0;
   const grandTotal = Math.max(0, subtotal - discountAmount);
 
+  // Perhitungan porsi Tunai (40%) dan QRIS (60%) dari Grand Total
   const cashPortion40 =
     paymentMode === 'SPLIT_40_60'
       ? Math.round((grandTotal * customSplitCashRatio) / 100)
@@ -109,6 +137,7 @@ export function calculateTransactionSummary(
         ? grandTotal
         : 0;
 
+  // Verifikasi kecukupan uang tunai dan kembalian
   const isCashSufficient = cashTendered >= cashPortion40;
   const cashChange = isCashSufficient ? cashTendered - cashPortion40 : 0;
   const isQrisPaid = paymentMode === 'FULL_CASH' ? true : qrisStatus === 'PAID';
@@ -134,6 +163,14 @@ export interface PaymentValidationResult {
   errorMessage?: string;
 }
 
+/**
+ * Validasi pembayaran sebelum menyelesaikan transaksi (Process Payment)
+ * Memeriksa:
+ * 1. Keranjang tidak boleh kosong
+ * 2. Total rasio split harus tepat 100% (40:60)
+ * 3. Uang tunai harus cukup (>= 40%)
+ * 4. QRIS harus berstatus PAID (tidak boleh PENDING atau FAILED)
+ */
 export function validateSalePayment(
   cart: CartItem[],
   summary: SplitPaymentSummary,
